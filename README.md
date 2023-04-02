@@ -1,1 +1,1 @@
-# LeetcodeBot
+# Leetcode Bot
