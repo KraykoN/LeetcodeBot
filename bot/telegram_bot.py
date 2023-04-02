@@ -1,6 +1,7 @@
 import os
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from leetcode.leetcode_api import get_user_progress, get_username_from_database, get_daily_problems, get_latest_news
 
 # Create a Telegram bot instance
 bot = telegram.Bot(token=os.environ["TELEGRAM_BOT_TOKEN"])
@@ -16,7 +17,9 @@ def start(update, context):
 # Define a command handler for the /help command
 def help(update, context):
     update.message.reply_text(
-        "/daily - Get daily Leetcode problems\n/progress - Get your Leetcode progress\n/news - Get the latest news from Leetcode"
+        """/daily - Get daily Leetcode problems\n
+        /progress - Get your Leetcode progress\n
+        /news - Get the latest news from Leetcode"""
     )
 
 
@@ -62,7 +65,8 @@ def news(update, context):
 # Define a message handler for unknown commands
 def unknown(update, context):
     update.message.reply_text(
-        "Sorry, I don't understand that command. Type /help to see available commands."
+        """Sorry, I don't understand that command.\n
+        Type /help to see available commands."""
     )
 
 
