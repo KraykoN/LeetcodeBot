@@ -1,4 +1,6 @@
 import requests
+from gql import Client, gql
+from gql.transport.requests import RequestsHTTPTransport
 
 
 def get_username_from_database(user_id):
@@ -8,18 +10,30 @@ def get_username_from_database(user_id):
 
 
 def get_user_progress(username):
-    url = f"https://leetcode.com/{username}/"
-    response = requests.get(url)
-    response.raise_for_status()
-    progress = {}
-    for line in response.text.splitlines():
-        if 'title="Solved' in line:
-            _, problem_count, _ = line.strip().split()
-            progress["solved"] = int(problem_count)
-        elif 'title="Accepted' in line:
-            _, problem_count, _ = line.strip().split()
-            progress["accepted"] = int(problem_count)
-    return progress
+    query = gql(
+        """
+        {
+            matchedUser(username: "krayko13")
+                {
+                    username
+                    submitStats: submitStatsGlobal
+                    {
+                        acSubmissionNum
+                        {
+                            difficulty
+                            count
+                            submissions
+                        }
+                    }
+                }
+        }
+        """
+    )
+    transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    result = client.execute(query)
+
+    return result
 
 
 def get_daily_problems():
