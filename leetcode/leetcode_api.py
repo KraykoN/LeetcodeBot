@@ -9,24 +9,24 @@ def get_username_from_database(user_id):
     return "example_username"
 
 
-def get_user_progress(username):
+def get_user_progress(leetcode_login):
     query = gql(
-        """
-        {
-            matchedUser(username: "krayko13")
-                {
+        f"""
+        {{
+            matchedUser(username: {leetcode_login})
+                {{
                     username
                     submitStats: submitStatsGlobal
-                    {
+                    {{
                         acSubmissionNum
-                        {
+                        {{
                             difficulty
                             count
                             submissions
-                        }
-                    }
-                }
-        }
+                        }}
+                    }}
+                }}
+        }}
         """
     )
     transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
@@ -133,4 +133,25 @@ def get_latest_news():
 
 
 if __name__ == "__main__":
-    print(get_user_progress("krayko13"))
+    name = '"krayko13"'
+    raw_data = get_user_progress(leetcode_login=name)
+    # response:
+    #     {'matchedUser': {'username': 'krayko13', 'submitStats': {'acSubmissionNum': [
+    #                 {'difficulty': 'All', 'count': 12, 'submissions': 17
+    #                 },
+    #                 {'difficulty': 'Easy', 'count': 8, 'submissions': 9
+    #                 },
+    #                 {'difficulty': 'Medium', 'count': 4, 'submissions': 8
+    #                 },
+    #                 {'difficulty': 'Hard', 'count': 0, 'submissions': 0
+    #                 }
+    #             ]
+    #         }
+    #     }
+    # }
+
+    difficulty_counts = {
+        item["difficulty"]: item["count"]
+        for item in raw_data["matchedUser"]["submitStats"]["acSubmissionNum"]
+    }
+    print(raw_data["matchedUser"]["username"] + " " + str(difficulty_counts))
