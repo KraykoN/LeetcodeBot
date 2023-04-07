@@ -1,11 +1,13 @@
 import os
+
 import telegram
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
 from leetcode.leetcode_api import (
-    get_user_progress,
-    get_username_from_database,
     get_daily_problems,
     get_latest_news,
+    get_user_progress,
+    get_username_from_database,
 )
 
 # Create a Telegram bot instance

@@ -58,59 +58,6 @@ def get_daily_problems():
     return daily_problems
 
 
-# def get_question_of_today():
-#     """Fetch today's question from Leetcode's GraphQL API"""
-
-#     client = requests.session()
-
-#     # Visit leetcode webpage to retrieve a CSRF token first
-#     client.get(LEETCODE_ALL_PROBLEM_URL)
-
-#     if "csrftoken" in client.cookies:
-#         csrftoken = client.cookies["csrftoken"]
-#     else:
-#         csrftoken = ""
-
-#     response = client.post(
-#         LEETCODE_DOMAIN + "/graphql/",
-#         data={
-#             "query": """query questionOfToday {
-#                 activeDailyCodingChallengeQuestion {
-#                     link
-#                     date
-#                     question {
-#                         questionFrontendId
-#                         title titleSlug
-#                         content
-#                         isPaidOnly
-#                         difficulty
-#                         topicTags {
-#                             name
-#                             slug
-#                         }
-#                         stats
-#                         hints
-#                     }
-#                 }
-#             }""",
-#             "variables": {},
-#             "operationName": "questionOfToday",
-#             "csrfmiddlewaretoken": csrftoken,
-#         },
-#         headers={"referer": LEETCODE_ALL_PROBLEM_URL},
-#     )
-
-#     try:
-#         return response.json()
-#     except ValueError:
-#         print("Failed to decode JSON, API response:")
-#         print(response.text)
-#         raise
-#     except BaseException as error:
-#         print(f"Unexpected {error=}, {type(error)=}")
-#         raise
-
-
 def get_latest_news():
     # url = "https://leetcode.com/discuss/"
     # response = requests.get(url)
