@@ -36,24 +36,32 @@ def get_user_progress(leetcode_login):
     return result
 
 
-def get_daily_problems():
+def get_new_problems(top_n_problems, paid_only, level_num):
     url = "https://leetcode.com/api/problems/all/"
     response = requests.get(url)
     response.raise_for_status()
-    daily_problems = []
+    new_problems = []
     for problem in response.json()["stat_status_pairs"]:
-        if problem["paid_only"] is False and problem["is_favor"] is False:
-            daily_problems.append(
+        if (
+            problem["paid_only"] is paid_only
+            and problem["difficulty"]["level"] is level_num
+        ):
+            new_problems.append(
                 {
                     "question_id": problem["stat"]["question_id"],
-                    "total_submitted": problem["stat"]["total_submitted"],
+                    "total_accepted_solutions": problem["stat"]["total_acs"],
+                    "total_submitted_solutions": problem["stat"]["total_submitted"],
                     "title": problem["stat"]["question__title"],
+                    "level_num": problem["difficulty"]["level"],
                     "url": f"https://leetcode.com/problems/{problem['stat']['question__title_slug']}/",
+                    "has_video": problem["stat"][
+                        "question__article__has_video_solution"
+                    ],
                 }
             )
-        if len(daily_problems) == 3:  # return at most 3 problems
+        if len(new_problems) == top_n_problems:  # return at most 3 problems
             break
-    return daily_problems
+    return new_problems
 
 
 def get_latest_news():
@@ -128,6 +136,6 @@ if __name__ == "__main__":
     )  # Output: krayko13 {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}
 
     # print(get_latest_news())
-    problems_lst = get_daily_problems()
+    problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
     print(problems_lst)
     print(len(problems_lst))
