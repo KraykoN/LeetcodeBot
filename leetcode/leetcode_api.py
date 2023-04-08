@@ -42,13 +42,11 @@ def get_daily_problems():
     response.raise_for_status()
     daily_problems = []
     for problem in response.json()["stat_status_pairs"]:
-        if (
-            problem["status"] == "ac"
-            and not problem["paid_only"]
-            and not problem["is_favor"]
-        ):
+        if problem["paid_only"] is False and problem["is_favor"] is False:
             daily_problems.append(
                 {
+                    "question_id": problem["stat"]["question_id"],
+                    "total_submitted": problem["stat"]["total_submitted"],
                     "title": problem["stat"]["question__title"],
                     "url": f"https://leetcode.com/problems/{problem['stat']['question__title_slug']}/",
                 }
@@ -125,6 +123,11 @@ if __name__ == "__main__":
         item["difficulty"]: item["count"]
         for item in raw_data["matchedUser"]["submitStats"]["acSubmissionNum"]
     }
-    print(raw_data["matchedUser"]["username"] + " " + str(difficulty_counts))
+    print(
+        raw_data["matchedUser"]["username"] + " " + str(difficulty_counts)
+    )  # Output: krayko13 {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}
 
-    print(get_latest_news())
+    # print(get_latest_news())
+    problems_lst = get_daily_problems()
+    print(problems_lst)
+    print(len(problems_lst))
