@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
@@ -157,20 +159,20 @@ def get_latest_news(theme, num_top_news):
     #     }
     # }
 
-    node_data_list = [edge["node"] for edge in result["categoryTopicList"]["edges"]]
-
-    for node_data in node_data_list:
-        print(
-            node_data["id"],
+    difficulty_counts = [
+        [
+            int(node_data["id"]),
             node_data["title"],
             node_data["commentCount"],
             node_data["viewCount"],
             node_data["pinned"],
-            node_data["post"]["creationDate"],
+            datetime.datetime.fromtimestamp(node_data["post"]["creationDate"]),
             node_data["post"]["author"]["username"],
-        )
+        ]
+        for node_data in (edge["node"] for edge in result["categoryTopicList"]["edges"])
+    ]
 
-    return node_data_list
+    return difficulty_counts
 
 
 # def get_available_contests()
@@ -211,4 +213,3 @@ if __name__ == "__main__":
     # print(problems_lst)
     # print(len(problems_lst))
     raw_data_2 = get_latest_news(theme="career", num_top_news=2)
-    print(raw_data_2)
