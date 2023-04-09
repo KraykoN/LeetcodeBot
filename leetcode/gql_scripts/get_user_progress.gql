@@ -1,0 +1,31 @@
+{{
+            matchedUser(username: {leetcode_login})
+                {{
+                    username
+                    submitStats: submitStatsGlobal
+                    {{
+                        acSubmissionNum
+                        {{
+                            difficulty
+                            count
+                            submissions
+                        }}
+                    }}
+                }}
+        }}
+
+# TODO What should i do with variable here?
+# # Output:
+# #     {'matchedUser': {'username': 'krayko13', 'submitStats': {'acSubmissionNum': [
+# #                 {'difficulty': 'All', 'count': 12, 'submissions': 17
+# #                 },
+# #                 {'difficulty': 'Easy', 'count': 8, 'submissions': 9
+# #                 },
+# #                 {'difficulty': 'Medium', 'count': 4, 'submissions': 8
+# #                 },
+# #                 {'difficulty': 'Hard', 'count': 0, 'submissions': 0
+# #                 }
+# #             ]
+# #         }
+# #     }
+# # }

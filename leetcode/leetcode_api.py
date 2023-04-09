@@ -6,12 +6,6 @@ from gql.transport.requests import RequestsHTTPTransport
 from utils import load_query
 
 
-def get_username_from_database(user_id):
-    # TODO: Implement this function to retrieve
-    # the user's LeetCode username from the database
-    return "example_username"
-
-
 def get_user_progress(leetcode_login):
     query = gql(
         f"""
@@ -32,11 +26,17 @@ def get_user_progress(leetcode_login):
         }}
         """
     )
+    # TODO What should i do with varible in .gql file?
     transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     result = client.execute(query)
 
-    return result
+    difficulty_counts = {
+        item["difficulty"]: item["count"]
+        for item in result["matchedUser"]["submitStats"]["acSubmissionNum"]
+    }
+
+    return {result["matchedUser"]["username"]: difficulty_counts}
 
 
 def get_new_problems(top_n_problems, paid_only, level_num):
@@ -134,7 +134,7 @@ def get_latest_news(theme, num_top_news):
     return difficulty_counts
 
 
-# def get_available_contests()
+# def get_available_contests(current_date?)
 
 # def get_tasks_of_contset(contest_name)
 
@@ -143,32 +143,10 @@ def get_latest_news(theme, num_top_news):
 # def get_task_in_details(task_num)
 
 if __name__ == "__main__":
-    # name = '"krayko13"'
-    # raw_data = get_user_progress(leetcode_login=name)
-    # # response:
-    # #     {'matchedUser': {'username': 'krayko13', 'submitStats': {'acSubmissionNum': [
-    # #                 {'difficulty': 'All', 'count': 12, 'submissions': 17
-    # #                 },
-    # #                 {'difficulty': 'Easy', 'count': 8, 'submissions': 9
-    # #                 },
-    # #                 {'difficulty': 'Medium', 'count': 4, 'submissions': 8
-    # #                 },
-    # #                 {'difficulty': 'Hard', 'count': 0, 'submissions': 0
-    # #                 }
-    # #             ]
-    # #         }
-    # #     }
-    # # }
-
-    # difficulty_counts = {
-    #     item["difficulty"]: item["count"]
-    #     for item in raw_data["matchedUser"]["submitStats"]["acSubmissionNum"]
-    # }
-    # print(
-    #     raw_data["matchedUser"]["username"] + " " + str(difficulty_counts)
-    # )  # Output: krayko13 {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}
+    print(get_user_progress(leetcode_login='"krayko13"'))
+    # {'krayko13': {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}}
 
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
     # print(problems_lst)
     # print(len(problems_lst))
-    print(get_latest_news(theme="career", num_top_news=2))
+    # print(get_latest_news(theme="career", num_top_news=2))
