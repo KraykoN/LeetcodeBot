@@ -65,23 +65,64 @@ def get_new_problems(top_n_problems, paid_only, level_num):
 
 
 def get_latest_news(theme, num_top_news):
-    url = f"https://leetcode.com/discuss/{theme}"
-    response = requests.get(url)
-    response.raise_for_status()
-    latest_news = []
-    for line in response.text.splitlines():
-        if 'href="/discuss/announcement"' in line:
-            break
-        if 'href="/discuss/' in line:
-            start_index = line.index('href="/discuss/') + len('href="')
-            end_index = line.index('"', start_index)
-            discussion_url = "https://leetcode.com" + line[start_index:end_index]
-            start_index = line.index(">", end_index) + 1
-            end_index = line.index("</a>", start_index)
-            discussion_title = line[start_index:end_index].strip()
-            latest_news.append({"title": discussion_title, "url": discussion_url})
-        if len(latest_news) == 3:  # return at most 3 news items
-            break
+    query = gql(
+        """
+        query categoryTopicList(
+        $categories: [String!]!
+        $first: Int!
+        $orderBy: TopicSortingOption
+        $skip: Int
+        $query: String
+        $tags: [String!]
+        ) {
+        categoryTopicList(
+            categories: $categories
+            orderBy: $orderBy
+            skip: $skip
+            query: $query
+            first: $first
+            tags: $tags
+        ) {
+            ...TopicsList
+        }
+        }
+
+        fragment TopicsList on TopicConnection {
+        totalNum
+        edges {
+            node {
+            id
+            title
+            commentCount
+            viewCount
+            pinned
+            post {
+                creationDate
+
+                author {
+                username
+                }
+            }
+            }
+        }
+        }
+        """
+    )
+
+    params = {
+        "orderBy": "hot",
+        "query": "",
+        "skip": 0,
+        "first": num_top_news,
+        "tags": [],
+        "categories": [f"{theme}"],
+    }
+
+    transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    result = client.execute(query, variable_values=params)
+
+    return result
 
 
 # def get_available_contests()
@@ -121,4 +162,54 @@ if __name__ == "__main__":
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
     # print(problems_lst)
     # print(len(problems_lst))
-    print(get_latest_news())
+    raw_data_2 = get_latest_news(theme="career", num_top_news=2)
+
+    node_data_list = (edge["node"] for edge in raw_data_2["categoryTopicList"]["edges"])
+
+    for node_data in node_data_list:
+        print(
+            node_data["id"],
+            node_data["title"],
+            node_data["commentCount"],
+            node_data["viewCount"],
+            node_data["pinned"],
+            node_data["post"]["creationDate"],
+            node_data["post"]["author"]["username"],
+        )
+
+    # # Output:
+    # {
+    #     "categoryTopicList": {
+    #         "totalNum": 3659,
+    #         "edges": [
+    #             {
+    #                 "node": {
+    #                     "id": "3388296",
+    #                     "title": "Join us in sharing tech job opportunities!",
+    #                     "commentCount": 13,
+    #                     "viewCount": 2220,
+    #                     "pinned": True,
+    #                     "tags": [],
+    #                     "post": {
+    #                         "creationDate": 1680833092,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #             {
+    #                 "node": {
+    #                     "id": "216428",
+    #                     "title": "[Guidelines] What is the Career section about?",
+    #                     "commentCount": 29,
+    #                     "viewCount": 20251,
+    #                     "pinned": True,
+    #                     "tags": [],
+    #                     "post": {
+    #                         "creationDate": 1547091947,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #         ],
+    #     }
+    # }
