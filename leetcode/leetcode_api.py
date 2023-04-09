@@ -3,6 +3,7 @@ import datetime
 import requests
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
+from utils import load_query
 
 
 def get_username_from_database(user_id):
@@ -67,49 +68,7 @@ def get_new_problems(top_n_problems, paid_only, level_num):
 
 
 def get_latest_news(theme, num_top_news):
-    query = gql(
-        """
-        query categoryTopicList(
-        $categories: [String!]!
-        $first: Int!
-        $orderBy: TopicSortingOption
-        $skip: Int
-        $query: String
-        $tags: [String!]
-        ) {
-        categoryTopicList(
-            categories: $categories
-            orderBy: $orderBy
-            skip: $skip
-            query: $query
-            first: $first
-            tags: $tags
-        ) {
-            ...TopicsList
-        }
-        }
-
-        fragment TopicsList on TopicConnection {
-        totalNum
-        edges {
-            node {
-            id
-            title
-            commentCount
-            viewCount
-            pinned
-            post {
-                creationDate
-
-                author {
-                username
-                }
-            }
-            }
-        }
-        }
-        """
-    )
+    query = load_query("leetcode/gql_scripts/get_news.gql")
 
     params = {
         "orderBy": "hot",
@@ -212,4 +171,4 @@ if __name__ == "__main__":
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
     # print(problems_lst)
     # print(len(problems_lst))
-    raw_data_2 = get_latest_news(theme="career", num_top_news=2)
+    print(get_latest_news(theme="career", num_top_news=2))

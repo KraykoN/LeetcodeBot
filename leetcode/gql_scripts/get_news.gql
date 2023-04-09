@@ -1,0 +1,39 @@
+query categoryTopicList(
+        $categories: [String!]!
+        $first: Int!
+        $orderBy: TopicSortingOption
+        $skip: Int
+        $query: String
+        $tags: [String!]
+        ) {
+        categoryTopicList(
+            categories: $categories
+            orderBy: $orderBy
+            skip: $skip
+            query: $query
+            first: $first
+            tags: $tags
+        ) {
+            ...TopicsList
+        }
+        }
+
+        fragment TopicsList on TopicConnection {
+        totalNum
+        edges {
+            node {
+            id
+            title
+            commentCount
+            viewCount
+            pinned
+            post {
+                creationDate
+
+                author {
+                username
+                }
+            }
+            }
+        }
+        }
