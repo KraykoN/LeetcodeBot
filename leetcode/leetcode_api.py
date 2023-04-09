@@ -122,7 +122,55 @@ def get_latest_news(theme, num_top_news):
     client = Client(transport=transport, fetch_schema_from_transport=False)
     result = client.execute(query, variable_values=params)
 
-    return result
+    # # Output:
+    # {
+    #     "categoryTopicList": {
+    #         "totalNum": 3659,
+    #         "edges": [
+    #             {
+    #                 "node": {
+    #                     "id": "3388296",
+    #                     "title": "Join us in sharing tech job opportunities!",
+    #                     "commentCount": 13,
+    #                     "viewCount": 2220,
+    #                     "pinned": True,
+    #                     "post": {
+    #                         "creationDate": 1680833092,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #             {
+    #                 "node": {
+    #                     "id": "216428",
+    #                     "title": "[Guidelines] What is the Career section about?",
+    #                     "commentCount": 29,
+    #                     "viewCount": 20251,
+    #                     "pinned": True,
+    #                     "post": {
+    #                         "creationDate": 1547091947,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #         ],
+    #     }
+    # }
+
+    node_data_list = [edge["node"] for edge in result["categoryTopicList"]["edges"]]
+
+    for node_data in node_data_list:
+        print(
+            node_data["id"],
+            node_data["title"],
+            node_data["commentCount"],
+            node_data["viewCount"],
+            node_data["pinned"],
+            node_data["post"]["creationDate"],
+            node_data["post"]["author"]["username"],
+        )
+
+    return node_data_list
 
 
 # def get_available_contests()
@@ -163,53 +211,4 @@ if __name__ == "__main__":
     # print(problems_lst)
     # print(len(problems_lst))
     raw_data_2 = get_latest_news(theme="career", num_top_news=2)
-
-    node_data_list = (edge["node"] for edge in raw_data_2["categoryTopicList"]["edges"])
-
-    for node_data in node_data_list:
-        print(
-            node_data["id"],
-            node_data["title"],
-            node_data["commentCount"],
-            node_data["viewCount"],
-            node_data["pinned"],
-            node_data["post"]["creationDate"],
-            node_data["post"]["author"]["username"],
-        )
-
-    # # Output:
-    # {
-    #     "categoryTopicList": {
-    #         "totalNum": 3659,
-    #         "edges": [
-    #             {
-    #                 "node": {
-    #                     "id": "3388296",
-    #                     "title": "Join us in sharing tech job opportunities!",
-    #                     "commentCount": 13,
-    #                     "viewCount": 2220,
-    #                     "pinned": True,
-    #                     "tags": [],
-    #                     "post": {
-    #                         "creationDate": 1680833092,
-    #                         "author": {"username": "LeetCode"},
-    #                     },
-    #                 }
-    #             },
-    #             {
-    #                 "node": {
-    #                     "id": "216428",
-    #                     "title": "[Guidelines] What is the Career section about?",
-    #                     "commentCount": 29,
-    #                     "viewCount": 20251,
-    #                     "pinned": True,
-    #                     "tags": [],
-    #                     "post": {
-    #                         "creationDate": 1547091947,
-    #                         "author": {"username": "LeetCode"},
-    #                     },
-    #                 }
-    #             },
-    #         ],
-    #     }
-    # }
+    print(raw_data_2)
