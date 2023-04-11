@@ -7,6 +7,17 @@ from utils import load_query
 
 
 def get_user_progress(leetcode_login):
+    """Method requests user's progress data from Graphql remote server using graphql query and parse
+    raw json output to dictionary type
+
+    Args:
+        leetcode_login (string): User's leetcode login
+
+    Returns:
+        dict: Dict of dict, where key is leetcode login and values are all solved tasks and solved tasks
+        grouped by diffculty
+    """
+
     query = load_query("leetcode/gql_scripts/get_user_progress.gql")
 
     params = {"leetcode_login": leetcode_login}
@@ -52,6 +63,16 @@ def get_new_problems(top_n_problems, paid_only, level_num):
 
 
 def get_latest_news(theme, num_top_news):
+    """_summary_
+
+    Args:
+        theme (string): _description_
+        num_top_news (int): _description_
+
+    Returns:
+        List: _description_
+    """
+
     query = load_query("leetcode/gql_scripts/get_news.gql")
 
     params = {
