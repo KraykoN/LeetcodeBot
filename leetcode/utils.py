@@ -1,9 +1,20 @@
+from itertools import dropwhile
+
 from gql import gql
 
 
 def load_query(path):
     with open(path) as f:
         return gql(f.read())
+
+
+def is_comment(s):
+    """function to check if a line
+    starts with some character.
+    Here # for comment
+    """
+    # return true if a line starts with #
+    return s.startswith("#")
 
 
 # TODO Put example of output query to .gql file
