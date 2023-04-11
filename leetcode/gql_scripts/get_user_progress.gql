@@ -1,20 +1,19 @@
-{{
-            matchedUser(username: {leetcode_login})
-                {{
+query myQuery($leetcode_login: String!){
+            matchedUser(username: $leetcode_login)
+                {
                     username
                     submitStats: submitStatsGlobal
-                    {{
+                    {
                         acSubmissionNum
-                        {{
+                        {
                             difficulty
                             count
                             submissions
-                        }}
-                    }}
-                }}
-        }}
+                        }
+                    }
+                }
+        }
 
-# TODO What should i do with variable here?
 # # Output:
 # #     {'matchedUser': {'username': 'krayko13', 'submitStats': {'acSubmissionNum': [
 # #                 {'difficulty': 'All', 'count': 12, 'submissions': 17

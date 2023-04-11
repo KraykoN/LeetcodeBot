@@ -37,3 +37,37 @@ query categoryTopicList(
             }
         }
         }
+# # Output:
+    # {
+    #     "categoryTopicList": {
+    #         "totalNum": 3659,
+    #         "edges": [
+    #             {
+    #                 "node": {
+    #                     "id": "3388296",
+    #                     "title": "Join us in sharing tech job opportunities!",
+    #                     "commentCount": 13,
+    #                     "viewCount": 2220,
+    #                     "pinned": True,
+    #                     "post": {
+    #                         "creationDate": 1680833092,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #             {
+    #                 "node": {
+    #                     "id": "216428",
+    #                     "title": "[Guidelines] What is the Career section about?",
+    #                     "commentCount": 29,
+    #                     "viewCount": 20251,
+    #                     "pinned": True,
+    #                     "post": {
+    #                         "creationDate": 1547091947,
+    #                         "author": {"username": "LeetCode"},
+    #                     },
+    #                 }
+    #             },
+    #         ],
+    #     }
+    # }

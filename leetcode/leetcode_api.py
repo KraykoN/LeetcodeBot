@@ -1,35 +1,19 @@
 import datetime
 
 import requests
-from gql import Client, gql
+from gql import Client
 from gql.transport.requests import RequestsHTTPTransport
 from utils import load_query
 
 
 def get_user_progress(leetcode_login):
-    query = gql(
-        f"""
-        {{
-            matchedUser(username: {leetcode_login})
-                {{
-                    username
-                    submitStats: submitStatsGlobal
-                    {{
-                        acSubmissionNum
-                        {{
-                            difficulty
-                            count
-                            submissions
-                        }}
-                    }}
-                }}
-        }}
-        """
-    )
-    # TODO What should i do with varible in .gql file?
+    query = load_query("leetcode/gql_scripts/get_user_progress.gql")
+
+    params = {"leetcode_login": leetcode_login}
+
     transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
-    result = client.execute(query)
+    result = client.execute(query, variable_values=params)
 
     difficulty_counts = {
         item["difficulty"]: item["count"]
@@ -83,41 +67,6 @@ def get_latest_news(theme, num_top_news):
     client = Client(transport=transport, fetch_schema_from_transport=False)
     result = client.execute(query, variable_values=params)
 
-    # # Output:
-    # {
-    #     "categoryTopicList": {
-    #         "totalNum": 3659,
-    #         "edges": [
-    #             {
-    #                 "node": {
-    #                     "id": "3388296",
-    #                     "title": "Join us in sharing tech job opportunities!",
-    #                     "commentCount": 13,
-    #                     "viewCount": 2220,
-    #                     "pinned": True,
-    #                     "post": {
-    #                         "creationDate": 1680833092,
-    #                         "author": {"username": "LeetCode"},
-    #                     },
-    #                 }
-    #             },
-    #             {
-    #                 "node": {
-    #                     "id": "216428",
-    #                     "title": "[Guidelines] What is the Career section about?",
-    #                     "commentCount": 29,
-    #                     "viewCount": 20251,
-    #                     "pinned": True,
-    #                     "post": {
-    #                         "creationDate": 1547091947,
-    #                         "author": {"username": "LeetCode"},
-    #                     },
-    #                 }
-    #             },
-    #         ],
-    #     }
-    # }
-
     difficulty_counts = [
         [
             int(node_data["id"]),
@@ -143,7 +92,7 @@ def get_latest_news(theme, num_top_news):
 # def get_task_in_details(task_num)
 
 if __name__ == "__main__":
-    print(get_user_progress(leetcode_login='"krayko13"'))
+    print(get_user_progress(leetcode_login="krayko13"))
     # {'krayko13': {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}}
 
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
