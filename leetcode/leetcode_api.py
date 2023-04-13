@@ -10,9 +10,6 @@ def get_user_progress(leetcode_login):
     """Method requests user's progress data from Graphql remote server using graphql query and parse
     raw json output to dictionary type
 
-    Args:
-        leetcode_login (string): User's leetcode login
-
     Returns:
         dict: Dict of dict, where key is leetcode login and values are all solved tasks and solved tasks
         grouped by diffculty
