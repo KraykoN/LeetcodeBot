@@ -7,21 +7,14 @@ from utils import load_query
 
 
 def get_user_progress(leetcode_login):
-    """Method requests user's progress data from Graphql remote server using graphql query and parse
-    raw json output to dictionary type
-
-    Returns:
-        dict: Dict of dict, where key is leetcode login and values are all solved tasks and solved tasks
-        grouped by diffculty
-    """
-
-    query = load_query("leetcode/gql_scripts/get_user_progress.gql")
+    USER_PROGRESS_QUERY = load_query("leetcode/gql_scripts/get_user_progress.gql")
 
     params = {"leetcode_login": leetcode_login}
 
-    transport = RequestsHTTPTransport(url="https://leetcode.com/graphql")
+    LEETCODE_GRAPHQL_ENDPOINT = "https://leetcode.com/graphql"
+    transport = RequestsHTTPTransport(url=LEETCODE_GRAPHQL_ENDPOINT)
     client = Client(transport=transport, fetch_schema_from_transport=False)
-    result = client.execute(query, variable_values=params)
+    result = client.execute(USER_PROGRESS_QUERY, variable_values=params)
 
     difficulty_counts = {
         item["difficulty"]: item["count"]
