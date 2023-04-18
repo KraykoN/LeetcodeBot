@@ -1,12 +1,25 @@
 import datetime
+from collections import namedtuple
 
+import gql
 import requests
 from gql import Client
 from gql.transport.requests import RequestsHTTPTransport
 from utils import load_query
 
 
-def get_user_progress(leetcode_login):
+class UserProgress(namedtuple("UserProgress", ["username", "difficulty_counts"])):
+    """
+    A named tuple representing a user's progress on LeetCode problems.
+
+    Attributes:
+        username (str): The user's LeetCode login.
+        difficulty_counts (dict): A dictionary containing the number of problems
+            solved at each difficulty level (Easy, Medium, Hard).
+    """
+
+
+def get_user_progress(leetcode_login: str) -> UserProgress:
     """
     This function gets the user progress of given leetcode login from leetcode GraphQL API.
 
@@ -14,9 +27,9 @@ def get_user_progress(leetcode_login):
         leetcode_login (str): Leetcode login for the user.
 
     Returns:
-        dict: A dictionary containing the username and difficulty counts.
-            {username: {difficulty: count}}
+        UserProgress: A named tuple containing the username and difficulty counts.
     """
+
     # Load the user progress query from gql_scripts directory.
     USER_PROGRESS_QUERY = load_query("leetcode/gql_scripts/get_user_progress.gql")
 
@@ -30,19 +43,22 @@ def get_user_progress(leetcode_login):
     transport = RequestsHTTPTransport(url=LEETCODE_GRAPHQL_ENDPOINT)
 
     # Instantiate a client using the transport object for executing the query
-    client = Client(transport=transport, fetch_schema_from_transport=False)
+    with Client(transport=transport, fetch_schema_from_transport=False) as client:
+        # Execute the query with the provided parameters
+        try:
+            result = client.execute(USER_PROGRESS_QUERY, variable_values=params)
+        except gql.transport.exceptions.TransportQueryError as e:
+            print(f"Error executing query: {e}")
+            return UserProgress(username="", difficulty_counts={})
 
-    # Execute the query with the provided parameters
-    result = client.execute(USER_PROGRESS_QUERY, variable_values=params)
+        # Create a dictionary of difficulty counts for each problem
+        difficulty_counts = {
+            item["difficulty"]: item["count"]
+            for item in result["matchedUser"]["submitStats"]["acSubmissionNum"]
+        }
 
-    # Create a dictionary of difficulty counts for each problem
-    difficulty_counts = {
-        item["difficulty"]: item["count"]
-        for item in result["matchedUser"]["submitStats"]["acSubmissionNum"]
-    }
-
-    # Return a dictionary of user progress
-    return {result["matchedUser"]["username"]: difficulty_counts}
+        # Return a named tuple of user's name and progress by problem levels
+        return UserProgress(result["matchedUser"]["username"], difficulty_counts)
 
 
 def get_new_problems(top_n_problems, paid_only, level_num):
@@ -125,6 +141,7 @@ def get_latest_news(theme, num_top_news):
 
 if __name__ == "__main__":
     print(get_user_progress(leetcode_login="krayko13"))
+    print(get_user_progress(leetcode_login="krayko1366"))
     # {'krayko13': {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}}
 
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
