@@ -7,30 +7,41 @@ from utils import load_query
 
 
 def get_user_progress(leetcode_login):
-    """_summary_
+    """
+    This function gets the user progress of given leetcode login from leetcode GraphQL API.
 
     Args:
-        leetcode_login (_type_): _description_
+        leetcode_login (str): Leetcode login for the user.
 
     Returns:
-        _type_: _description_
+        dict: A dictionary containing the username and difficulty counts.
+            {username: {difficulty: count}}
     """
+    # Load the user progress query from gql_scripts directory.
     USER_PROGRESS_QUERY = load_query("leetcode/gql_scripts/get_user_progress.gql")
 
+    # Set the parameter for the query
     params = {"leetcode_login": leetcode_login}
 
+    # Set the endpoint for the GraphQL API
     LEETCODE_GRAPHQL_ENDPOINT = "https://leetcode.com/graphql"
+
+    # Create a transport object for making requests to the GraphQL API
     transport = RequestsHTTPTransport(url=LEETCODE_GRAPHQL_ENDPOINT)
 
+    # Instantiate a client using the transport object for executing the query
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
+    # Execute the query with the provided parameters
     result = client.execute(USER_PROGRESS_QUERY, variable_values=params)
 
+    # Create a dictionary of difficulty counts for each problem
     difficulty_counts = {
         item["difficulty"]: item["count"]
         for item in result["matchedUser"]["submitStats"]["acSubmissionNum"]
     }
 
+    # Return a dictionary of user progress
     return {result["matchedUser"]["username"]: difficulty_counts}
 
 
