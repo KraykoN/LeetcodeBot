@@ -63,8 +63,12 @@ def get_user_progress(leetcode_login: str) -> UserProgress:
 
 def get_new_problems(top_n_problems, paid_only, level_num):
     url = "https://leetcode.com/api/problems/all/"
-    response = requests.get(url)
-    response.raise_for_status()
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return []
     new_problems = []
     for problem in response.json()["stat_status_pairs"]:
         if (
@@ -142,6 +146,7 @@ def get_latest_news(theme, num_top_news):
 if __name__ == "__main__":
     print(get_user_progress(leetcode_login="krayko13"))
     print(get_user_progress(leetcode_login="krayko1366"))
+    print(get_user_progress(leetcode_login=""))
     # {'krayko13': {'All': 12, 'Easy': 8, 'Medium': 4, 'Hard': 0}}
 
     # problems_lst = get_new_problems(top_n_problems=3, paid_only=False, level_num=1)
