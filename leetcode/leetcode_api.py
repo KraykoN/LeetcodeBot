@@ -1,6 +1,5 @@
 import datetime
-from collections import namedtuple
-from typing import List
+from typing import Dict, List, NamedTuple
 
 import gql
 import requests
@@ -9,7 +8,11 @@ from gql.transport.requests import RequestsHTTPTransport
 from utils import load_query
 
 
-class UserProgress(namedtuple("UserProgress", ["username", "difficulty_counts"])):
+class UserProgress(
+    NamedTuple(
+        "UserProgress", [("username", str), ("difficulty_counts", Dict[str, int])]
+    )
+):
     """
     A named tuple representing a user's progress on LeetCode problems.
 
@@ -21,16 +24,16 @@ class UserProgress(namedtuple("UserProgress", ["username", "difficulty_counts"])
 
 
 class Problem(
-    namedtuple(
+    NamedTuple(
         "Problem",
         [
-            "question_id",
-            "total_accepted_solutions",
-            "total_submitted_solutions",
-            "title",
-            "level_num",
-            "url",
-            "has_video",
+            ("question_id", str),
+            ("total_accepted_solutions", int),
+            ("total_submitted_solutions", int),
+            ("title", str),
+            ("level_num", str),
+            ("url", str),
+            ("has_video", bool),
         ],
     )
 ):
@@ -43,9 +46,17 @@ class Problem(
 
 
 class NewsItem(
-    namedtuple(
+    NamedTuple(
         "NewsItem",
-        ["id", "title", "comment_count", "view_count", "pinned", "date", "author"],
+        [
+            ("id", str),
+            ("title", str),
+            ("comment_count", int),
+            ("view_count", int),
+            ("pinned", bool),
+            ("date", datetime.datetime),
+            ("username", str),
+        ],
     )
 ):
     # TODO Make docstring
@@ -206,7 +217,7 @@ def get_latest_news(theme: str, num_top_news: int) -> List[NewsItem]:
             view_count=news["viewCount"],
             pinned=news["pinned"],
             date=datetime.datetime.fromtimestamp(news["post"]["creationDate"]),
-            author=news["post"]["author"]["username"],
+            username=news["post"]["author"]["username"],
         )
         for news in (edge["node"] for edge in result["categoryTopicList"]["edges"])
     ]
